@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+{% load static %}
+{% load leaflet_tags %}
+<head>
+	{% leaflet_js %}
+	{% leaflet_css %}
+	<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+	<style>
+     /*.leaflet-container { height: 80%; }*/
+     #kairi{width: 80%; height: 600px; display: block; margin-left: auto; margin-right: auto;}
+     h3{ text-align: center; }
+    </style>
+    <!-- <link rel="stylesheet" href="https://unpkg.com/leaflet@1.3.0/dist/leaflet.css" /> -->
+   <link rel="stylesheet" type = "text/css" href="{% static 'vendor/bootstrap/css/bootstrap.min.css '%}" >
+
+    <!-- Custom fonts for this template -->
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/font-awesome/css/font-awesome.min.css' %}"> 
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Montserrat:400,700" >
+    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Lato:400,700,400italic,700italic" >
+
+    <!-- Plugin CSS -->
+    <link rel="stylesheet" type="text/css" href="{% static 'vendor/magnific-popup/magnific-popup.css' %}" >
+
+    <!-- Custom styles for this template -->
+    <link rel="stylesheet" type="text/css" href="{% static 'css/freelancer.min.css' %}" >
+    <link rel="stylesheet" type="text/css" href="{% static 'leafletlayers/leaflet.groupedlayercontrol.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/leaflet-search.css' %}" />
+    <!-- <script src="https://unpkg.com/leaflet@1.3.0/dist/leaflet.js"></script> -->
+    <script type="text/javascript" src="{% static 'disty/leaflet.ajax.js' %}"></script>
+    <script type="text/javascript" src="{% static 'leafletlayers/leaflet.groupedlayercontrol.min.js' %}"></script>
+    
+</head>
+<body>
+
+	<script type="text/javascript" src="{% static 'js/leaflet-search.js' %}"></script>
+	 <nav class="navbar navbar-expand-lg bg-secondary fixed-top text-uppercase" id="mainNav">
+      <div class="container">
+        <a class="navbar-brand js-scroll-trigger" href="#page-top">Gatukuyu-mataara road</a>
+        <button class="navbar-toggler navbar-toggler-right text-uppercase bg-primary text-white rounded" type="button" data-toggle="collapse" data-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+          Menu
+          <i class="fa fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item mx-0 mx-lg-1">
+              <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#analysis">Analysis</a>
+            </li>
+            <li class="nav-item mx-0 mx-lg-1">
+              <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#about">About</a>
+            </li>
+            <li class="nav-item mx-0 mx-lg-1">
+              <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#contact">Contact</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div class="space"></div>
+    <style type="text/css">
+    	.space{margin-top: 80px}
+    </style>
+	<script type="text/javascript">
+
+
+		function project_layers(map,options){
+			//var osm = 'http://(s).tile.openstreetmap.org/{x}{y}{z}.png';
+/*			var map = L.map('map');
+            map.createPane('labels');
+            map.getPane('labels').style.zIndex = 650;*/
+
+			var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
+					'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
+					'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+				mbUrl = 'https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token=pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4NXVycTA2emYycXBndHRqcmZ3N3gifQ.rJcFIG214AriISLbB6B5aw';
+
+			var grayscale   = L.tileLayer(mbUrl, {id: 'mapbox.light', attribution: mbAttr}),
+				streets  = L.tileLayer(mbUrl, {id: 'mapbox.streets',   attribution: mbAttr}),
+				satellite  = L.tileLayer(mbUrl, {id: 'mapbox.satellite',   attribution: mbAttr});
+
+
+			var acq_data = new L.GeoJSON.AJAX("{% url 'acquarea' %}",{
+			    style: function colors(feature){
+                	var d = feature.properties.area
+                	if(d > 0){
+                		return{
+                			color: '#B22222',
+                			fillOpacity:0.8
+                		}
+                	}
+                },
+
+				onEachFeature: function(feature,layer){
+					layer.bindPopup(feature.properties.name.toString());
+
+				}           
+
+			});
+
+			var datasets = new L.GeoJSON.AJAX("{% url 'kairiparcel' %}",{
+
+                style: function colors(feature){
+                	var d = feature.properties.kairi_parc
+                	if(d > 2000){
+                		return{
+                			fillColor:'transparent',
+                			color: 'orange',
+                			fillOpacity:0.8
+                		}
+                	}
+                	else if(d<2000){
+                		return{
+                			fillColor:'transparent',
+                			color:'red',
+                		    fillOpacity:0.8	
+                		}
+                		
+                	}
+                	
+                },
+
+				onEachFeature: function(feature,layer){
+					layer.bindPopup("Owner: " + feature.properties.owner_name.toString() + '<br>' + "Name:  " + feature.properties.name +'<br>' + "Area: "  + feature.properties.remm_area +'<br>');
+
+				}
+                     
+			});
+
+			acq_data.addTo(map);
+			datasets.addTo(map);
+
+
+			var baseLayers = {
+				"Grayscale":grayscale,
+				"Streets":streets,
+				"Satellite":satellite
+			};
+
+			var groupedOverlays = {
+			  "Layers": {
+			    "acquarea": acq_data,
+			    "kairiparcel": datasets
+			  },
+            };
+
+L.control.groupedLayers(baseLayers, groupedOverlays).addTo(map);
+
+	        var searchControl = new L.Control.Search({
+			    layer: datasets,
+			    initial: false,
+			    marker:false,
+			    propertyName: 'owner_name',
+			    moveToLocation: function(latlng, title, map) {
+			        //map.fitBounds( latlng.layer.getBounds() );
+			        var zoom = map.getBoundsZoom(latlng.layer.getBounds());
+  			        map.setView(latlng, zoom); // access the zoom
+		        }
+			});
+
+			
+			searchControl.on('search:locationfound', function(e) {	
+		        //console.log('search:locationfound');
+		        //map.removeLayer(this._markerSearch)
+				e.layer.setStyle({fillColor: '#B22222 ', color: '#ff0000 ' });
+				if(e.layer._popup)
+					e.layer.openPopup();
+
+			}).on('search:collapsed', function(e) {
+
+				datasets.eachLayer(function(layer) {	//restore feature color
+					datasets.resetStyle(layer);
+				});	
+			});
+
+			map.addControl( searchControl );
+
+        }
+
+	</script>
+
+	{% leaflet_map "kairi" callback="window.project_layers" %}
+
+</body>
+</html>

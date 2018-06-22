@@ -48,7 +48,7 @@
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
             <li class="nav-item mx-0 mx-lg-1">
-              <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#analysis">Analysis</a>
+              <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#analysis">Links</a>
             </li>
             <li class="nav-item mx-0 mx-lg-1">
               <a class="nav-link py-3 px-0 px-lg-3 rounded js-scroll-trigger" href="#about">About</a>
@@ -104,7 +104,7 @@
 			var datasets = new L.GeoJSON.AJAX("{% url 'kairiparcel' %}",{
 
                 style: function colors(feature){
-                	var d = feature.properties.kairi_parc
+                	var d = feature.properties.Initial_Area
                 	if(d > 2000){
                 		return{
                 			fillColor:'transparent',
@@ -123,8 +123,17 @@
                 	
                 },
 
+
 				onEachFeature: function(feature,layer){
-					layer.bindPopup("Owner: " + feature.properties.owner_name.toString() + '<br>' + "Name:  " + feature.properties.name +'<br>' + "Area: "  + feature.properties.remm_area +'<br>');
+					layer.bindPopup("Owner: " + feature.properties.owner_name.toString() + '<br>' + "Name:  " + feature.properties.parcelID +'<br>' + "Area: "  + feature.properties.Remaining_Area +'<br>');
+					    layer.on('mouseover', function () {
+				            this.setStyle({
+				                color: 'green'
+				            });
+				        });
+				        layer.on('mouseout', function () {
+				            datasets.resetStyle(this);
+				        });
 
 				}
                      
@@ -152,7 +161,7 @@ L.control.groupedLayers(baseLayers, groupedOverlays).addTo(map);
 	        var searchControl = new L.Control.Search({
 			    layer: datasets,
 			    initial: false,
-			    marker:false,
+			    //marker:false,
 			    propertyName: 'owner_name',
 			    moveToLocation: function(latlng, title, map) {
 			        //map.fitBounds( latlng.layer.getBounds() );
@@ -162,27 +171,38 @@ L.control.groupedLayers(baseLayers, groupedOverlays).addTo(map);
 			});
 
 			
-			searchControl.on('search:locationfound', function(e) {	
+/*			searchControl.on('search:locationfound', function(datasets) {	
 		        //console.log('search:locationfound');
 		        //map.removeLayer(this._markerSearch)
-				e.layer.setStyle({fillColor: '#B22222 ', color: '#ff0000 ' });
-				if(e.layer._popup)
-					e.layer.openPopup();
+				datasets.setStyle({fillColor: '#B22222 ', color: '#ff0000 ' });
+				if(datasets._popup)
+					datasets.openPopup();
 
-			}).on('search:collapsed', function(e) {
+			}).on('search:collapsed', function(datasets) {
 
 				datasets.eachLayer(function(layer) {	//restore feature color
 					datasets.resetStyle(layer);
 				});	
-			});
+			});*/
 
 			map.addControl( searchControl );
+
+/*			var legend = L.control({position: 'bottomright'});
+
+            legend.onAdd = function (map) {
+            	var div = L.DomUtil.create('div', 'legend'),                
+                div.innerHTML = '<i style="background:' + color:'red' + '"></i> '
+                
+            	return div
+            };
+
+            legend.addTo(map);*/
 
         }
 
 	</script>
 
 	{% leaflet_map "kairi" callback="window.project_layers" %}
-
+ {{ acquiredarea.sum_area }} 
 </body>
 </html>

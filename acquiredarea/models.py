@@ -3,11 +3,11 @@ from django.contrib.gis.db import models
 
 # Create your models here
 class KairiParcels(models.Model):
-    kairi_parc = models.FloatField()
-    name = models.IntegerField()
+    Initial_Area = models.FloatField()
+    parcelID = models.IntegerField()
     owner_name = models.CharField(max_length=50)
-    remm_area = models.FloatField()
-    area = models.FloatField()
+    Remaining_Area = models.FloatField()
+    Acquired_Area = models.FloatField()
     geom = models.MultiPolygonField(srid=4326)
 
     def __str__(self):

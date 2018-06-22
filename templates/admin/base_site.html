@@ -2,8 +2,22 @@
 
 {% block title %}{{ title }} | Acquisitions Admin{% endblock %}
 
+
+{% block extrastyle %}
+<style type="text/css">
+	#header{
+		background-color: #666;
+	}
+	#user-tools{
+		font-size: 12px !important;
+		font-weight: 400 !important;
+		word-spacing: 5px;
+	}
+</style>
+
+{% endblock %}
 {% block branding %}
-<h1 id="site-name"><a href="{% url 'admin:index' %}">Acqusitions administration</a></h1>
+<h1 id="site-name"><a href="{% url 'admin:index' %}">Acquisitions administration</a></h1>
 {% endblock %}
 
 {% block nav-global %}{% endblock %}

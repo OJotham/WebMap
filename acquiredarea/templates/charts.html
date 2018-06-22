@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+<!DOCTYPE html>
+<html>
+{% load static %}
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+
+    <title></title>
+</head>
+<body>
+
+<script >
+
+	{% block jquery %}
+    var endpoint = '/acqarea'
+    labels = []
+    var defaultData = []
+	$.ajax({
+		method:"GET",
+		url: endpoint,
+		success: function(data){
+            for(item=0;item<data.features.length;item++){
+                who = data.features[item].properties.name
+                //console.log(who);
+                var area = "";
+                area += data.features[item].properties.area
+                labels.push(who);
+                defaultData.push(area);
+                //console.log(area);
+                setChart()
+                
+            }
+                
+		},
+		error: function(error_data){
+			console.log("error")
+			console.log(error_data)
+		}
+	})
+
+    function setChart(){
+        var ctx = document.getElementById("myChart").getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '# Area acquired',
+                        data: defaultData,
+                        backgroundColor:'blue',
+                        }]
+                    }
+                })
+    }    
+              
+
+	{% endblock %}
+</script>
+
+{% block content %}
+
+<div class= 'row'>
+    <a href="/admin">Admin</a>
+    <a href="/">View Site</a>
+	<div class="col-sm-6" >
+		<h2> Analysis </h2>
+		<canvas id="myChart" width="100" height="100"></canvas>
+
+	</div>	
+    <div id = 'computes'>
+        <h3> Spatial Queries </h3>  
+        <br>
+        <p>{{ parcel_num }}</p>
+        <p>{{ sum }}</p>
+        <p>{{ average }}</p> 
+        <p>{{ max }}</p> 
+        <p>{{ min }}</p>
+
+    </div>  
+</div>
+
+
+<style type = "text/css">
+#computes{
+    margin-top:100px; 
+    margin-left: 800px;
+}
+</style>
+{% endblock content %}
+ 
+</body>
+</html>

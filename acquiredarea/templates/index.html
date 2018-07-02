@@ -65,14 +65,14 @@
     	.space{margin-top: 80px}
     </style>
 	<script type="text/javascript">
-
-
+        // function is set to load the various map layers
 		function project_layers(map,options){
 			//var osm = 'http://(s).tile.openstreetmap.org/{x}{y}{z}.png';
 /*			var map = L.map('map');
             map.createPane('labels');
             map.getPane('labels').style.zIndex = 650;*/
 
+            // variable being assigned the basemap layer information
 			var mbAttr = 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, ' +
 					'<a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, ' +
 					'Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
@@ -82,7 +82,7 @@
 				streets  = L.tileLayer(mbUrl, {id: 'mapbox.streets',   attribution: mbAttr}),
 				satellite  = L.tileLayer(mbUrl, {id: 'mapbox.satellite',   attribution: mbAttr});
 
-
+            //variable is assigned the acquired area shapefile
 			var acq_data = new L.GeoJSON.AJAX("{% url 'acquarea' %}",{
 			    style: function colors(feature){
                 	var d = feature.properties.area
@@ -93,13 +93,16 @@
                 		}
                 	}
                 },
-
+                
+                //function to display popup
 				onEachFeature: function(feature,layer){
 					layer.bindPopup(feature.properties.name.toString());
 
 				}           
 
 			});
+
+            //variable is assigned the owner parcel shapefile
 
 			var datasets = new L.GeoJSON.AJAX("{% url 'kairiparcel' %}",{
 
@@ -122,7 +125,7 @@
                 	}
                 	
                 },
-
+                //function to display popup information o layers
 
 				onEachFeature: function(feature,layer){
 					layer.bindPopup("Owner: " + feature.properties.owner_name.toString() + '<br>' + "Name:  " + feature.properties.parcelID +'<br>' + "Area: "  + feature.properties.Remaining_Area +'<br>');
@@ -156,8 +159,10 @@
 			  },
             };
 
+//grouping the layers for display
 L.control.groupedLayers(baseLayers, groupedOverlays).addTo(map);
 
+//Conducting a serch criteria
 	        var searchControl = new L.Control.Search({
 			    layer: datasets,
 			    initial: false,
@@ -170,39 +175,12 @@ L.control.groupedLayers(baseLayers, groupedOverlays).addTo(map);
 		        }
 			});
 
-			
-/*			searchControl.on('search:locationfound', function(datasets) {	
-		        //console.log('search:locationfound');
-		        //map.removeLayer(this._markerSearch)
-				datasets.setStyle({fillColor: '#B22222 ', color: '#ff0000 ' });
-				if(datasets._popup)
-					datasets.openPopup();
-
-			}).on('search:collapsed', function(datasets) {
-
-				datasets.eachLayer(function(layer) {	//restore feature color
-					datasets.resetStyle(layer);
-				});	
-			});*/
-
 			map.addControl( searchControl );
-
-/*			var legend = L.control({position: 'bottomright'});
-
-            legend.onAdd = function (map) {
-            	var div = L.DomUtil.create('div', 'legend'),                
-                div.innerHTML = '<i style="background:' + color:'red' + '"></i> '
-                
-            	return div
-            };
-
-            legend.addTo(map);*/
 
         }
 
 	</script>
 
-	{% leaflet_map "kairi" callback="window.project_layers" %}
- {{ acquiredarea.sum_area }} 
+	{% leaflet_map "kairi" callback="window.project_layers" %} 
 </body>
 </html>
